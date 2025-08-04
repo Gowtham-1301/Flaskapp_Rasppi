@@ -6,18 +6,15 @@ import base64
 
 app = Flask(__name__)
 
-# Video sources dictionary
 video_sources = {
     "local": 0,
     "http": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4", 
     "rtsp": "rtsp://rtsp.stream/pattern"   
 }
 
-# Roboflow config
 ROBOFLOW_API_KEY = "your_roboflow_api_key"
 ROBOFLOW_MODEL_URL = "https://detect.roboflow.com/YOUR_MODEL_NAME/1"
 
-# Global cap for detection
 current_caps = {}
 
 def get_cv2_cap(source_key):
@@ -46,11 +43,9 @@ def detect():
     if not ret:
         return jsonify({"error": "Failed to capture frame"}), 500
 
-    # Encode image as JPEG
     _, buffer = cv2.imencode('.jpg', frame)
     img_base64 = base64.b64encode(buffer).decode('utf-8')
 
-    # Send to Roboflow
     response = requests.post(
         f"{ROBOFLOW_MODEL_URL}?api_key={ROBOFLOW_API_KEY}",
         data=img_base64,
@@ -69,3 +64,4 @@ def hls():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
