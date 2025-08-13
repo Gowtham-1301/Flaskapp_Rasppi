@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Drone Stream</title>
+</head>
+<body>
+    <h2>Select Video Stream Source</h2>
+    <ul>
+        <li><a href="/video_feed?source=local">Local Webcam</a></li>
+        <li><a href="/video_feed?source=http">HTTP Stream</a></li>
+        <li><a href="/video_feed?source=rtsp">RTSP Stream</a></li>
+        <li><a href="/hls">HLS Stream (Browser Player)</a></li>
+    </ul>
+
+    <hr>
+    <img src="/video_feed?source=local" width="640" id="stream">
+</body>
+</html>
