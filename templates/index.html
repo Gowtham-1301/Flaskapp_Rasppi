@@ -1,18 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Drone Stream</title>
+    <meta charset="UTF-8">
+    <title>Smart Video Capture Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+        .navbar {
+            background: #343a40;
+        }
+        .navbar-brand, .nav-link, .navbar-text {
+            color: #fff !important;
+        }
+        .video-container {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        .btn-primary {
+            background: #343a40;
+            border: none;
+        }
+        .btn-primary:hover {
+            background: #495057;
+        }
+        .result-box {
+            background: #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+    </style>
 </head>
 <body>
-    <h2>Select Video Stream Source</h2>
-    <ul>
-        <li><a href="/video_feed?source=local">Local Webcam</a></li>
-        <li><a href="/video_feed?source=http">HTTP Stream</a></li>
-        <li><a href="/video_feed?source=rtsp">RTSP Stream</a></li>
-        <li><a href="/hls">HLS Stream (Browser Player)</a></li>
-    </ul>
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Smart Video Capture</a>
+        <span class="navbar-text ms-auto"></span>
+    </div>
+</nav>
+<div class="container">
+    <div class="video-container">
+        <div class="row">
+            <div class="col-md-8">
+                <h4>Live Video Stream</h4>
+                <img id="videoFeed" src="/video_feed?source=local" class="img-fluid rounded border" alt="Video Stream">
+            </div>
+            <div class="col-md-4">
+                <h4>Controls</h4>
+                <form id="sourceForm" class="mb-3">
+                    <label for="sourceSelect" class="form-label">Select Video Source:</label>
+                    <select class="form-select" id="sourceSelect">
+                        <option value="local">Local Camera</option>
+                        <option value="http">HTTP Stream</option>
+                        <option value="rtsp">RTSP Stream</option>
+                    </select>
+                </form>
+                <button class="btn btn-primary w-100 mb-2" id="detectBtn">Run Detection</button>
+                <div id="detectResult" class="result-box" style="display:none;"></div>
+                <div class="alert alert-info mt-3">
+                    <strong>Note:</strong> Frames are saved every 30–40 seconds.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // Change video source
+    document.getElementById('sourceSelect').addEventListener('change', function() {
+        const source = this.value;
+        document.getElementById('videoFeed').src = '/video_feed?source=' + source;
+    });
 
-    <hr>
-    <img src="/video_feed?source=local" width="640" id="stream">
+    // Run detection
+    document.getElementById('detectBtn').addEventListener('click', function() {
+        const source = document.getElementById('sourceSelect').value;
+        const resultBox = document.getElementById('detectResult');
+        resultBox.style.display = 'block';
+        resultBox.innerHTML = 'Detecting...';
+        fetch('/detect?source=' + source)
+            .then(res => res.json())
+            .then(data => {
+                resultBox.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            })
+            .catch(() => {
+                resultBox.innerHTML = '<span class="text-danger">Detection failed.</span>';
+            });
+    });
+</script>
 </body>
 </html>
